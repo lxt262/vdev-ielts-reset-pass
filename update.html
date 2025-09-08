@@ -256,10 +256,10 @@
 		const { createClient } = supabase;
 		const _supabase = createClient(supabaseUrl, supabaseKey);		
 		
-        //const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        //const supabase = _supabase.createClient(supabaseUrl, supabaseKey);
 		// 1. Khôi phục session từ URL
       async function recoverSession() {
-        const { data, error } = await supabase.auth.getSessionFromUrl({
+        const { data, error } = await _supabase.auth.getSessionFromUrl({
           storeSession: true,
         });
         if (error) console.error("Error recovering session:", error);
