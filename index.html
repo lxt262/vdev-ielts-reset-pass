@@ -3,64 +3,541 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Đặt Lại Mật Khẩu</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Đặt Lại Mật Khẩu - VDev IELTS</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    /* Reset and base styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    
+    /* Container styles */
+    .container {
+      position: relative;
+      width: 100%;
+      max-width: 28rem;
+    }
+    
+    .main-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      animation: fadeIn 0.6s ease-out;
+    }
+    
+    /* Header styles */
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 4rem;
+      height: 4rem;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border-radius: 50%;
+      margin-bottom: 1rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .logo svg {
+      width: 2rem;
+      height: 2rem;
+      color: white;
+    }
+    
+    .title {
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 0.5rem;
+    }
+    
+    .subtitle {
+      color: #6b7280;
+      font-size: 0.875rem;
+    }
+    
+    .description {
+      color: #6b7280;
+      font-size: 0.875rem;
+      margin-top: 1rem;
+      line-height: 1.5;
+    }
+    
+    /* Form styles */
+    .form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #374151;
+    }
+    
+    .input-wrapper {
+      position: relative;
+    }
+    
+    .input-icon {
+      position: absolute;
+      top: 50%;
+      left: 0.75rem;
+      transform: translateY(-50%);
+      width: 1.25rem;
+      height: 1.25rem;
+      color: #9ca3af;
+      pointer-events: none;
+    }
+    
+    .input {
+      width: 100%;
+      padding: 0.75rem 2.5rem 0.75rem 2.5rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.75rem;
+      background: white;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+      outline: none;
+    }
+    
+    .input:focus {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    }
+    
+    .input::placeholder {
+      color: #9ca3af;
+    }
+    
+    /* Button styles */
+    .submit-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .submit-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+    }
+    
+    .submit-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .loading-icon {
+      width: 1.25rem;
+      height: 1.25rem;
+      margin-right: 0.75rem;
+      animation: spin 1s linear infinite;
+    }
+    
+    .loading-icon.hidden {
+      display: none;
+    }
+    
+    /* Message styles */
+    .message-container {
+      margin-top: 1.5rem;
+    }
+    
+    .message-container.hidden {
+      display: none;
+    }
+    
+    .message {
+      padding: 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-align: center;
+    }
+    
+    .message.error {
+      background-color: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+    
+    .message.success {
+      background-color: #f0fdf4;
+      color: #16a34a;
+      border: 1px solid #bbf7d0;
+    }
+    
+    .message.info {
+      background-color: #eff6ff;
+      color: #2563eb;
+      border: 1px solid #bfdbfe;
+    }
+    
+    /* Back to login */
+    .back-to-login {
+      margin-top: 2rem;
+      text-align: center;
+    }
+    
+    .back-to-login p {
+      color: #6b7280;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      color: #3b82f6;
+      font-weight: 600;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    
+    .back-link:hover {
+      color: #1d4ed8;
+    }
+    
+    .back-link svg {
+      width: 1rem;
+      height: 1rem;
+      margin-right: 0.5rem;
+    }
+    
+    /* Footer */
+    .footer {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #e5e7eb;
+      text-align: center;
+    }
+    
+    .footer p {
+      font-size: 0.75rem;
+      color: #9ca3af;
+    }
+    
+    /* Background and animations */
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      overflow: hidden;
+    }
+    
+    .bg-elements {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    
+    .floating-element {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      animation: floating 3s ease-in-out infinite;
+    }
+    
+    .floating-1 {
+      top: 2.5rem;
+      left: 2.5rem;
+      width: 5rem;
+      height: 5rem;
+    }
+    
+    .floating-2 {
+      top: 8rem;
+      right: 5rem;
+      width: 4rem;
+      height: 4rem;
+      animation-delay: -1s;
+    }
+    
+    .floating-3 {
+      bottom: 5rem;
+      left: 8rem;
+      width: 3rem;
+      height: 3rem;
+      animation-delay: -2s;
+    }
+    
+    .floating-4 {
+      bottom: 8rem;
+      right: 2.5rem;
+      width: 6rem;
+      height: 6rem;
+      animation-delay: -0.5s;
+    }
+    
+    @keyframes floating {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+  </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center h-screen">
-  <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-    <h1 class="text-2xl font-bold mb-6 text-center">Đặt Lại Mật Khẩu</h1>
-    <form id="reset-password-form" class="space-y-4">
-      <div>
-        <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          required
-          class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Nhập email của bạn"
-        >
+<body>
+  <div class="gradient-bg"></div>
+  
+  <!-- Background Decorative Elements -->
+  <div class="bg-elements">
+    <div class="floating-element floating-1"></div>
+    <div class="floating-element floating-2"></div>
+    <div class="floating-element floating-3"></div>
+    <div class="floating-element floating-4"></div>
+  </div>
+
+  <div class="container">
+    <div class="main-card">
+      <!-- Logo and Header -->
+      <div class="header">
+        <div class="logo">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 7.89a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+          </svg>
+        </div>
+        <h1 class="title">Đặt Lại Mật Khẩu</h1>
+        <p class="subtitle">VDev IELTS Learning Platform</p>
+        <p class="description">
+          Nhập email của bạn và chúng tôi sẽ gửi link đặt lại mật khẩu tới hộp thư của bạn.
+        </p>
       </div>
-      <button
-        type="submit"
-        class="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition"
-      >
-        Gửi Link Đặt Lại Mật Khẩu
-      </button>
-    </form>
-    <p id="message" class="mt-4 text-center text-sm text-gray-600"></p>
+
+      <!-- Message Display -->
+      <div id="message-container" class="message-container hidden">
+        <div id="message" class="message"></div>
+      </div>
+
+      <!-- Reset Request Form -->
+      <form id="password-reset-request-form" class="form">
+        <div class="form-group">
+          <label for="email" class="label">
+            Địa chỉ email *
+          </label>
+          <div class="input-wrapper">
+            <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 7.89a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+            </svg>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              class="input"
+              placeholder="Nhập địa chỉ email của bạn"
+            >
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          id="submit-btn"
+          class="submit-btn"
+        >
+          <svg id="loading-icon" class="loading-icon hidden" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span id="btn-text">Gửi Link Đặt Lại Mật Khẩu</span>
+        </button>
+      </form>
+
+      <!-- Back to Login -->
+      <div class="back-to-login">
+        <p>Nhớ mật khẩu rồi?</p>
+        <a href="login.html" class="back-link">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+          Quay lại đăng nhập
+        </a>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <p>
+          © 2024 VDev IELTS. Nền tảng học IELTS hàng đầu.
+        </p>
+      </div>
+    </div>
   </div>
 
   <script>
-     // Khởi tạo Supabase client
-        const supabaseUrl = 'https://cjmssixhdlzakimruvcj.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNqbXNzaXhoZGx6YWtpbXJ1dmNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcyNTkzMDUsImV4cCI6MjA3MjgzNTMwNX0.JP7doZ0bsRwqnqQ0Z9iNcr50YRWqTkQPwgd8vwMwZyI'; // Thay bằng anon key thực tế của bạn
-		const { createClient } = supabase;
-		const _supabase = createClient(supabaseUrl, supabaseKey);		
+    // Initialize Supabase client
+    const supabaseUrl = 'https://cjmssixhdlzakimruvcj.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNqbXNzaXhoZGx6YWtpbXJ1dmNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcyNTkzMDUsImV4cCI6MjA3MjgzNTMwNX0.JP7doZ0bsRwqnqQ0Z9iNcr50YRWqTkQPwgd8vwMwZyI';
+    const { createClient } = supabase;
+    const _supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Xử lý form gửi yêu cầu đặt lại mật khẩu
-    document.getElementById('reset-password-form').addEventListener('submit', async (e) => {
+    // UI Elements
+    const form = document.getElementById('password-reset-request-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const btnText = document.getElementById('btn-text');
+    const loadingIcon = document.getElementById('loading-icon');
+    const messageContainer = document.getElementById('message-container');
+    const messageElement = document.getElementById('message');
+    const emailInput = document.getElementById('email');
+
+    // Show message function
+    function showMessage(text, type = 'info') {
+      messageContainer.classList.remove('hidden');
+      messageElement.textContent = text;
+      
+      // Reset classes
+      messageElement.classList.remove('error', 'success', 'info');
+      
+      // Add appropriate classes based on type
+      messageElement.classList.add(type);
+
+      // Auto hide after 5 seconds for success messages
+      if (type === 'success') {
+        setTimeout(() => {
+          messageContainer.classList.add('hidden');
+        }, 5000);
+      }
+    }
+
+    // Set loading state
+    function setLoading(loading) {
+      if (loading) {
+        submitBtn.disabled = true;
+        btnText.textContent = 'Đang gửi...';
+        loadingIcon.classList.remove('hidden');
+      } else {
+        submitBtn.disabled = false;
+        btnText.textContent = 'Gửi Link Đặt Lại Mật Khẩu';
+        loadingIcon.classList.add('hidden');
+      }
+    }
+
+    // Validate email format
+    function isValidEmail(email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    }
+
+    // Handle form submission
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = document.getElementById('email').value;
-      const messageElement = document.getElementById('message');
+      
+      const email = emailInput.value.trim();
+      
+      // Validate email
+      if (!email) {
+        showMessage('Vui lòng nhập địa chỉ email.', 'error');
+        return;
+      }
+      
+      if (!isValidEmail(email)) {
+        showMessage('Vui lòng nhập địa chỉ email hợp lệ.', 'error');
+        return;
+      }
+
+      setLoading(true);
+      messageContainer.classList.add('hidden');
 
       try {
         const { error } = await _supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: 'https://lxt262.github.io/vdev-ielts-reset-pass/update.html', // Thay bằng URL xử lý đặt lại mật khẩu
+          redirectTo: 'https://lxt262.github.io/vdev-ielts-reset-pass/reset-pass.html',
         });
 
         if (error) {
-          messageElement.textContent = 'Lỗi: ' + error.message;
-          messageElement.classList.add('text-red-500');
+          console.error('Reset password error:', error);
+          let errorMessage = 'Có lỗi xảy ra khi gửi email đặt lại mật khẩu';
+          
+          if (error.message) {
+            if (error.message.includes('rate limit')) {
+              errorMessage = 'Bạn đã gửi quá nhiều yêu cầu. Vui lòng thử lại sau ít phút.';
+            } else if (error.message.includes('invalid')) {
+              errorMessage = 'Địa chỉ email không hợp lệ.';
+            } else {
+              errorMessage = error.message;
+            }
+          }
+          
+          showMessage(errorMessage, 'error');
         } else {
-          messageElement.textContent = 'Link đặt lại mật khẩu đã được gửi tới email của bạn!';
-          messageElement.classList.add('text-green-500');
+          showMessage('📧 Link đặt lại mật khẩu đã được gửi tới email của bạn! Vui lòng kiểm tra hộp thư (bao gồm cả thư mục spam).', 'success');
+          // Clear form
+          form.reset();
         }
       } catch (err) {
-        messageElement.textContent = 'Đã xảy ra lỗi. Vui lòng thử lại!';
-        messageElement.classList.add('text-red-500');
+        console.error('Unexpected error:', err);
+        showMessage('Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau!', 'error');
+      } finally {
+        setLoading(false);
       }
+    });
+
+    // Add input animation on focus
+    emailInput.addEventListener('focus', () => {
+      emailInput.parentElement.style.transform = 'scale(1.02)';
+    });
+
+    emailInput.addEventListener('blur', () => {
+      emailInput.parentElement.style.transform = 'scale(1)';
+    });
+
+    // Auto-focus email input when page loads
+    window.addEventListener('load', () => {
+      emailInput.focus();
     });
   </script>
 </body>
