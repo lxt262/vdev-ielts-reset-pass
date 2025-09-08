@@ -404,14 +404,14 @@
                     console.error('Error getting session:', error);
                     showAlert('Phiên đặt lại mật khẩu không hợp lệ hoặc đã hết hạn', 'error');
                     setTimeout(() => {
-                        window.location.href = 'https://lxt262.github.io/vdev-ielts/'; // Redirect về trang chính
+                        //window.location.href = 'https://lxt262.github.io/vdev-ielts/'; // Redirect về trang chính
                     }, 3000);
                 }
                 
                 if (!session) {
                     showAlert('Phiên đặt lại mật khẩu không hợp lệ', 'error');
                     setTimeout(() => {
-                        window.location.href = 'https://lxt262.github.io/vdev-ielts/';
+                        //window.location.href = 'https://lxt262.github.io/vdev-ielts/';
                     }, 3000);
                 }
             } catch (error) {
