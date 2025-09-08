@@ -256,17 +256,6 @@
 		const { createClient } = supabase;
 		const _supabase = createClient(supabaseUrl, supabaseKey);		
 		
-        //const supabase = _supabase.createClient(supabaseUrl, supabaseKey);
-		// 1. Khôi phục session từ URL
-      async function recoverSession() {
-        const { data, error } = await _supabase.auth.getSessionFromUrl({
-          storeSession: true,
-        });
-        if (error) console.error("Error recovering session:", error);
-        else console.log("Session recovered:", data);
-      }
-
-      recoverSession();
         // Các elements
         const form = document.getElementById('passwordResetForm');
         const newPasswordInput = document.getElementById('newPassword');
@@ -404,8 +393,31 @@
             }
         });
 
-        // Kiểm tra session khi trang load
-       
+        
+       // Kiểm tra session khi trang load
+        window.addEventListener('load', async function() {
+            try {
+                const { data: { session }, error } = await _supabase.auth.getSession();
+                
+                if (error) {
+                    console.error('Error getting session:', error);
+                    showAlert('Phiên đặt lại mật khẩu không hợp lệ hoặc đã hết hạn', 'error');
+                    setTimeout(() => {
+                        window.location.href = 'https://lxt262.github.io/vdev-ielts/'; // Redirect về trang chính
+                    }, 3000);
+                }
+                
+                if (!session) {
+                    showAlert('Phiên đặt lại mật khẩu không hợp lệ', 'error');
+                    setTimeout(() => {
+                        window.location.href = 'https://lxt262.github.io/vdev-ielts/';
+                    }, 3000);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Có lỗi xảy ra. Vui lòng thử lại sau.', 'error');
+            }
+        });
     </script>
 </body>
 </html>
