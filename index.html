@@ -1,42 +1,65 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Reset Password</title>
-</head>
-<body>
-  <h2>Reset Password</h2>
-  <form id="reset-form">
-    <input type="email" id="email" placeholder="Enter your email" required />
-    <button type="submit">Send Reset Link</button>
-  </form>
-
-  <div id="message"></div>
-
-  <!-- Supabase client -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đặt Lại Mật Khẩu</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+  <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+    <h1 class="text-2xl font-bold mb-6 text-center">Đặt Lại Mật Khẩu</h1>
+    <form id="reset-password-form" class="space-y-4">
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          required
+          class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Nhập email của bạn"
+        >
+      </div>
+      <button
+        type="submit"
+        class="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition"
+      >
+        Gửi Link Đặt Lại Mật Khẩu
+      </button>
+    </form>
+    <p id="message" class="mt-4 text-center text-sm text-gray-600"></p>
+  </div>
+
   <script>
-    // Thay bằng project URL và public anon key của bạn
-    const supabaseUrl = "https://cjmssixhdlzakimruvcj.supabase.co";
-    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNqbXNzaXhoZGx6YWtpbXJ1dmNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcyNTkzMDUsImV4cCI6MjA3MjgzNTMwNX0.JP7doZ0bsRwqnqQ0Z9iNcr50YRWqTkQPwgd8vwMwZyI";
-    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+     // Khởi tạo Supabase client
+        const supabaseUrl = 'https://cjmssixhdlzakimruvcj.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNqbXNzaXhoZGx6YWtpbXJ1dmNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcyNTkzMDUsImV4cCI6MjA3MjgzNTMwNX0.JP7doZ0bsRwqnqQ0Z9iNcr50YRWqTkQPwgd8vwMwZyI'; // Thay bằng anon key thực tế của bạn
+		const { createClient } = supabase;
+		const _supabase = createClient(supabaseUrl, supabaseKey);		
 
-    const form = document.getElementById("reset-form");
-    const message = document.getElementById("message");
-
-    form.addEventListener("submit", async (e) => {
+    // Xử lý form gửi yêu cầu đặt lại mật khẩu
+    document.getElementById('reset-password-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = document.getElementById("email").value;
+      const email = document.getElementById('email').value;
+      const messageElement = document.getElementById('message');
 
-      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: "https://YOUR_USERNAME.github.io/supabase-reset-password/update.html"
-      });
+      try {
+        const { error } = await _supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: 'https://lxt262.github.io/vdev-ielts-reset-pass/update.html', // Thay bằng URL xử lý đặt lại mật khẩu
+        });
 
-      if (error) {
-        message.innerText = "Error: " + error.message;
-      } else {
-        message.innerText = "Check your email for the reset link!";
+        if (error) {
+          messageElement.textContent = 'Lỗi: ' + error.message;
+          messageElement.classList.add('text-red-500');
+        } else {
+          messageElement.textContent = 'Link đặt lại mật khẩu đã được gửi tới email của bạn!';
+          messageElement.classList.add('text-green-500');
+        }
+      } catch (err) {
+        messageElement.textContent = 'Đã xảy ra lỗi. Vui lòng thử lại!';
+        messageElement.classList.add('text-red-500');
       }
     });
   </script>
