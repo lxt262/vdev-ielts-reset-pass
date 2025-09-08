@@ -79,13 +79,6 @@
       font-size: 0.875rem;
     }
     
-    .description {
-      color: #6b7280;
-      font-size: 0.875rem;
-      margin-top: 1rem;
-      line-height: 1.5;
-    }
-    
     /* Form styles */
     .form {
       display: flex;
@@ -120,6 +113,24 @@
       pointer-events: none;
     }
     
+    .toggle-password {
+      position: absolute;
+      top: 50%;
+      right: 0.75rem;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #6b7280;
+      cursor: pointer;
+      padding: 0.25rem;
+      border-radius: 0.25rem;
+      transition: color 0.2s;
+    }
+    
+    .toggle-password:hover {
+      color: #3b82f6;
+    }
+    
     .input {
       width: 100%;
       padding: 0.75rem 2.5rem 0.75rem 2.5rem;
@@ -140,6 +151,34 @@
     
     .input::placeholder {
       color: #9ca3af;
+    }
+    
+    /* Password strength indicator */
+    .password-strength {
+      margin-top: 0.5rem;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      display: none;
+    }
+    
+    .password-strength.weak {
+      background-color: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+    
+    .password-strength.medium {
+      background-color: #fffbeb;
+      color: #d97706;
+      border: 1px solid #fed7aa;
+    }
+    
+    .password-strength.strong {
+      background-color: #f0fdf4;
+      color: #16a34a;
+      border: 1px solid #bbf7d0;
     }
     
     /* Button styles */
@@ -350,14 +389,11 @@
       <div class="header">
         <div class="logo">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 7.89a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m0 0a2 2 0 012 2 2 2 0 01-2 2 2 2 0 01-2-2V9zM9 7a2 2 0 00-2 2v6a2 2 0 002 2h6a2 2 0 002-2V9a2 2 0 00-2-2H9z"></path>
           </svg>
         </div>
         <h1 class="title">Đặt Lại Mật Khẩu</h1>
         <p class="subtitle">VDev IELTS Learning Platform</p>
-        <p class="description">
-          Nhập email của bạn và chúng tôi sẽ gửi link đặt lại mật khẩu tới hộp thư của bạn.
-        </p>
       </div>
 
       <!-- Message Display -->
@@ -365,24 +401,52 @@
         <div id="message" class="message"></div>
       </div>
 
-      <!-- Reset Request Form -->
-      <form id="password-reset-request-form" class="form">
+      <!-- Reset Form -->
+      <form id="password-reset-form" class="form">
         <div class="form-group">
-          <label for="email" class="label">
-            Địa chỉ email *
+          <label for="newPassword" class="label">
+            Mật khẩu mới *
           </label>
           <div class="input-wrapper">
             <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 7.89a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
             </svg>
             <input
-              type="email"
-              id="email"
-              name="email"
+              type="password"
+              id="newPassword"
+              name="newPassword"
               required
+              minlength="6"
               class="input"
-              placeholder="Nhập địa chỉ email của bạn"
+              placeholder="Nhập mật khẩu mới"
             >
+            <button type="button" class="toggle-password" onclick="togglePassword('newPassword')">
+              👁️
+            </button>
+          </div>
+          <div id="passwordStrength" class="password-strength"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword" class="label">
+            Xác nhận mật khẩu *
+          </label>
+          <div class="input-wrapper">
+            <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <input
+              type="password"
+              id="confirmPassword"
+              name="confirmPassword"
+              required
+              minlength="6"
+              class="input"
+              placeholder="Nhập lại mật khẩu mới"
+            >
+            <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword')">
+              👁️
+            </button>
           </div>
         </div>
 
@@ -395,13 +459,13 @@
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
-          <span id="btn-text">Gửi Link Đặt Lại Mật Khẩu</span>
+          <span id="btn-text">Cập nhật mật khẩu</span>
         </button>
       </form>
 
       <!-- Back to Login -->
       <div class="back-to-login">
-        <p>Nhớ mật khẩu rồi?</p>
+        <p>Đã cập nhật xong?</p>
         <a href="login.html" class="back-link">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
@@ -427,13 +491,15 @@
     const _supabase = createClient(supabaseUrl, supabaseKey);
 
     // UI Elements
-    const form = document.getElementById('password-reset-request-form');
+    const form = document.getElementById('password-reset-form');
     const submitBtn = document.getElementById('submit-btn');
     const btnText = document.getElementById('btn-text');
     const loadingIcon = document.getElementById('loading-icon');
     const messageContainer = document.getElementById('message-container');
     const messageElement = document.getElementById('message');
-    const emailInput = document.getElementById('email');
+    const newPasswordInput = document.getElementById('newPassword');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    const passwordStrength = document.getElementById('passwordStrength');
 
     // Show message function
     function showMessage(text, type = 'info') {
@@ -458,35 +524,90 @@
     function setLoading(loading) {
       if (loading) {
         submitBtn.disabled = true;
-        btnText.textContent = 'Đang gửi...';
+        btnText.textContent = 'Đang cập nhật...';
         loadingIcon.classList.remove('hidden');
       } else {
         submitBtn.disabled = false;
-        btnText.textContent = 'Gửi Link Đặt Lại Mật Khẩu';
+        btnText.textContent = 'Cập nhật mật khẩu';
         loadingIcon.classList.add('hidden');
       }
     }
 
-    // Validate email format
-    function isValidEmail(email) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return emailRegex.test(email);
+    // Check password strength
+    function checkPasswordStrength(password) {
+      const strength = {
+        score: 0,
+        text: '',
+        class: ''
+      };
+
+      if (password.length >= 8) strength.score++;
+      if (/[a-z]/.test(password)) strength.score++;
+      if (/[A-Z]/.test(password)) strength.score++;
+      if (/[0-9]/.test(password)) strength.score++;
+      if (/[^A-Za-z0-9]/.test(password)) strength.score++;
+
+      if (strength.score < 3) {
+        strength.text = 'Mật khẩu yếu - Cần ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số';
+        strength.class = 'weak';
+      } else if (strength.score < 4) {
+        strength.text = 'Mật khẩu trung bình - Thêm ký tự đặc biệt để tăng độ bảo mật';
+        strength.class = 'medium';
+      } else {
+        strength.text = 'Mật khẩu mạnh';
+        strength.class = 'strong';
+      }
+
+      return strength;
+    }
+
+    // Update password strength display
+    newPasswordInput.addEventListener('input', function() {
+      const password = this.value;
+      if (password.length > 0) {
+        const strength = checkPasswordStrength(password);
+        passwordStrength.textContent = strength.text;
+        passwordStrength.className = `password-strength ${strength.class}`;
+        passwordStrength.style.display = 'block';
+      } else {
+        passwordStrength.style.display = 'none';
+      }
+    });
+
+    // Toggle password visibility
+    function togglePassword(inputId) {
+      const input = document.getElementById(inputId);
+      const button = input.nextElementSibling;
+      
+      if (input.type === 'password') {
+        input.type = 'text';
+        button.textContent = '🙈';
+      } else {
+        input.type = 'password';
+        button.textContent = '👁️';
+      }
     }
 
     // Handle form submission
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       
-      const email = emailInput.value.trim();
+      const newPassword = newPasswordInput.value.trim();
+      const confirmPassword = confirmPasswordInput.value.trim();
       
-      // Validate email
-      if (!email) {
-        showMessage('Vui lòng nhập địa chỉ email.', 'error');
+      // Validate passwords
+      if (!newPassword || !confirmPassword) {
+        showMessage('Vui lòng nhập đầy đủ thông tin.', 'error');
         return;
       }
       
-      if (!isValidEmail(email)) {
-        showMessage('Vui lòng nhập địa chỉ email hợp lệ.', 'error');
+      if (newPassword.length < 6) {
+        showMessage('Mật khẩu phải có ít nhất 6 ký tự.', 'error');
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        showMessage('Mật khẩu xác nhận không khớp.', 'error');
         return;
       }
 
@@ -494,29 +615,32 @@
       messageContainer.classList.add('hidden');
 
       try {
-        const { error } = await _supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: 'https://lxt262.github.io/vdev-ielts-reset-pass/reset-pass.html',
+        // Update password via Supabase
+        const { data, error } = await _supabase.auth.updateUser({
+          password: newPassword
         });
 
         if (error) {
-          console.error('Reset password error:', error);
-          let errorMessage = 'Có lỗi xảy ra khi gửi email đặt lại mật khẩu';
+          console.error('Update password error:', error);
+          let errorMessage = 'Có lỗi xảy ra khi cập nhật mật khẩu';
           
           if (error.message) {
-            if (error.message.includes('rate limit')) {
-              errorMessage = 'Bạn đã gửi quá nhiều yêu cầu. Vui lòng thử lại sau ít phút.';
-            } else if (error.message.includes('invalid')) {
-              errorMessage = 'Địa chỉ email không hợp lệ.';
-            } else {
-              errorMessage = error.message;
-            }
+            errorMessage = error.message;
+          } else if (error.error_description) {
+            errorMessage = error.error_description;
           }
           
           showMessage(errorMessage, 'error');
         } else {
-          showMessage('📧 Link đặt lại mật khẩu đã được gửi tới email của bạn! Vui lòng kiểm tra hộp thư (bao gồm cả thư mục spam).', 'success');
+          showMessage('🎉 Mật khẩu đã được cập nhật thành công! Bạn có thể đăng nhập với mật khẩu mới.', 'success');
           // Clear form
           form.reset();
+          passwordStrength.style.display = 'none';
+          
+          // Redirect after success (optional - uncomment if needed)
+          // setTimeout(() => {
+          //   window.location.href = 'https://lxt262.github.io/vdev-ielts/';
+          // }, 3000);
         }
       } catch (err) {
         console.error('Unexpected error:', err);
@@ -526,18 +650,42 @@
       }
     });
 
+    // Check session when page loads
+    window.addEventListener('load', async function() {
+      try {
+        const { data: { session }, error } = await _supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Error getting session:', error);
+          showMessage('Phiên đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.', 'error');
+          // Uncomment to redirect after error
+          // setTimeout(() => {
+          //   window.location.href = 'https://lxt262.github.io/vdev-ielts/';
+          // }, 3000);
+        }
+        
+        if (!session) {
+          showMessage('Phiên đặt lại mật khẩu không hợp lệ.', 'error');
+          // Uncomment to redirect after error
+          // setTimeout(() => {
+          //   window.location.href = 'https://lxt262.github.io/vdev-ielts/';
+          // }, 3000);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showMessage('Có lỗi xảy ra. Vui lòng thử lại sau.', 'error');
+      }
+    });
+
     // Add input animation on focus
-    emailInput.addEventListener('focus', () => {
-      emailInput.parentElement.style.transform = 'scale(1.02)';
-    });
+    [newPasswordInput, confirmPasswordInput].forEach(input => {
+      input.addEventListener('focus', () => {
+        input.parentElement.style.transform = 'scale(1.02)';
+      });
 
-    emailInput.addEventListener('blur', () => {
-      emailInput.parentElement.style.transform = 'scale(1)';
-    });
-
-    // Auto-focus email input when page loads
-    window.addEventListener('load', () => {
-      emailInput.focus();
+      input.addEventListener('blur', () => {
+        input.parentElement.style.transform = 'scale(1)';
+      });
     });
   </script>
 </body>
