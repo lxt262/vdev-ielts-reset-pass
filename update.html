@@ -252,7 +252,7 @@
         // Khởi tạo Supabase client
         const supabaseUrl = 'https://cjmssixhdlzakimruvcj.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNqbXNzaXhoZGx6YWtpbXJ1dmNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcyNTkzMDUsImV4cCI6MjA3MjgzNTMwNX0.JP7doZ0bsRwqnqQ0Z9iNcr50YRWqTkQPwgd8vwMwZyI'; // Thay bằng anon key thực tế của bạn
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        const supabase = createClient(supabaseUrl, supabaseKey);
 
         // Các elements
         const form = document.getElementById('passwordResetForm');
