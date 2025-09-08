@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đặt lại mật khẩu - VDEV IELTS</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+	
     <style>
         * {
             margin: 0;
@@ -252,8 +253,11 @@
         // Khởi tạo Supabase client
         const supabaseUrl = 'https://cjmssixhdlzakimruvcj.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNqbXNzaXhoZGx6YWtpbXJ1dmNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcyNTkzMDUsImV4cCI6MjA3MjgzNTMwNX0.JP7doZ0bsRwqnqQ0Z9iNcr50YRWqTkQPwgd8vwMwZyI'; // Thay bằng anon key thực tế của bạn
-        const supabase = supabaseClient.createClient(supabaseUrl, supabaseKey);
-
+		const { createClient } = supabase;
+		const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+		
+        //const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+		
         // Các elements
         const form = document.getElementById('passwordResetForm');
         const newPasswordInput = document.getElementById('newPassword');
@@ -355,7 +359,7 @@
 
             try {
                 // Cập nhật mật khẩu qua Supabase
-                const { data, error } = await supabase.auth.updateUser({
+                const { data, error } = await supabaseClient.auth.updateUser({
                     password: newPassword
                 });
 
