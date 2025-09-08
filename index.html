@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VDev IELTS - Đặt lại mật khẩu</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            background: #2563EB;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        button:hover {
+            background: #1d4ed8;
+        }
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>🎓 VDev IELTS</h1>
+            <h3>Đặt lại mật khẩu</h3>
+        </div>
+        
+        <div id="message"></div>
+        
+        <form id="reset-form">
+            <input 
+                type="password" 
+                id="password" 
+                placeholder="Mật khẩu mới" 
+                required
+                minlength="8"
+            >
+            <input 
+                type="password" 
+                id="confirm-password" 
+                placeholder="Xác nhận mật khẩu" 
+                required
+                minlength="8"
+            >
+            <button type="submit">Đặt lại mật khẩu</button>
+        </form>
+        
+        <p style="text-align: center; margin-top: 20px;">
+            <a href="vdev-ielts://auth">Quay lại ứng dụng</a>
+        </p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+       // ===== CẬP NHẬT THÔNG TIN SUPABASE CỦA BẠN =====
+		const supabaseUrl = 'https://cjmssixhdlzakimruvcj.supabase.co'  // ← Thay đổi
+		const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNqbXNzaXhoZGx6YWtpbXJ1dmNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcyNTkzMDUsImV4cCI6MjA3MjgzNTMwNX0.JP7doZ0bsRwqnqQ0Z9iNcr50YRWqTkQPwgd8vwMwZyI'  // ← Thay đổi
+		// ===============================================
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey)
+
+        const form = document.getElementById('reset-form')
+        const messageDiv = document.getElementById('message')
+
+        // Get access token from URL
+        const urlParams = new URLSearchParams(window.location.hash.substring(1))
+        const accessToken = urlParams.get('access_token')
+        const refreshToken = urlParams.get('refresh_token')
+
+        if (!accessToken) {
+            showMessage('Liên kết không hợp lệ hoặc đã hết hạn', 'error')
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault()
+            
+            const password = document.getElementById('password').value
+            const confirmPassword = document.getElementById('confirm-password').value
+            
+            if (password !== confirmPassword) {
+                showMessage('Mật khẩu xác nhận không khớp', 'error')
+                return
+            }
+            
+            if (password.length < 8) {
+                showMessage('Mật khẩu phải có ít nhất 8 ký tự', 'error')
+                return
+            }
+            
+            try {
+                // Set session
+                await supabase.auth.setSession({
+                    access_token: accessToken,
+                    refresh_token: refreshToken
+                })
+                
+                // Update password
+                const { error } = await supabase.auth.updateUser({
+                    password: password
+                })
+                
+                if (error) throw error
+                
+                showMessage('Đặt lại mật khẩu thành công! Bạn có thể đăng nhập bằng mật khẩu mới.', 'success')
+                
+                // Redirect to app after 3 seconds
+                setTimeout(() => {
+                    window.location.href = 'vdev-ielts://auth/login'
+                }, 3000)
+                
+            } catch (error) {
+                showMessage(`Lỗi: ${error.message}`, 'error')
+            }
+        })
+
+        function showMessage(message, type) {
+            messageDiv.innerHTML = `<div class="message ${type}">${message}</div>`
+        }
+    </script>
+</body>
+</html>
